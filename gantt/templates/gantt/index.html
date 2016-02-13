@@ -1,0 +1,57 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'gantt/css/dhtmlxgantt.css' %}" />
+<script src="{% static 'gantt/js/dhtmlxgantt.js' %}"></script>
+<div id="gantt_here" style='width:1000px; height:400px;'></div>
+
+<script type="text/javascript">
+var tasks = {
+    data:[
+        {id:1, text:"Project #1",start_date:"01-04-2013", duration:110,
+        progress: 0.6, open: true},
+        {id:2, text:"Task #1",   start_date:"01-04-2013", duration:5,
+        progress: 1,   open: true, parent:1},
+        {% autoescape off %}
+        {{lista}},
+        {% endautoescape %}
+        {id:4, text:"Task #2",   start_date:"02-04-2013", duration:7,
+        progress: 0.5, open: true, parent:1},
+        {id:5, text:"Task #2.1", start_date:"03-04-2013", duration:2,
+        progress: 1,   open: true, parent:4},
+        {id:6, text:"Task #2.2", start_date:"04-04-2013", duration:3,
+        progress: 0.8, open: true, parent:4},
+        {id:7, text:"Task #2.3", start_date:"05-04-2013", duration:4,
+        progress: 0.2, open: true, parent:4},
+
+
+    ],
+    links:[
+        {id:1, source:1, target:2, type:"1"},
+        {id:2, source:2, target:3, type:"1"},
+        {id:2, source:1, target:4, type:"1"},
+        {id:3, source:4, target:5, type:"1"},
+        {id:4, source:5, target:6, type:"0"},
+        {id:5, source:6, target:7, type:"0"}
+    ]
+};
+gantt.config.xml_date = "%Y-%m-%d";
+gantt.config.autosize = "xy";
+gantt.init("gantt_here");
+gantt.load("/gantt/project/");
+
+var dp=new gantt.dataProcessor("/gantt/modify_project/");
+dp.setTransactionMode({
+    mode:"POST",
+    headers:{
+        "csrfmiddlewaretoken" : "{{csrf_token}}",
+        "X-CSRFToken" : "{{csrf_token}}"
+    },
+    payload:{
+        "key1XXXXXX":"value1",
+        "csrfmiddlewaretoken" : "{{csrf_token}}"
+    }
+}, false);
+dp.enableDebug(true);
+dp.init(gantt);
+
+</script>
