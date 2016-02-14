@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from gantt import urls as gantt_urls
 
 urlpatterns = [
+    url(r'^', include('gantt.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^gantt/', include('gantt.urls')),
+    url(r'^gantt/', include(gantt_urls)),
 ]

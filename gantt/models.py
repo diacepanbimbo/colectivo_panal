@@ -76,3 +76,10 @@ class ActivityLink(models.Model):
     source = models.ForeignKey(Activity, related_name = 'target', on_delete=models.CASCADE)
     target = models.ForeignKey(Activity, related_name = 'source', on_delete=models.CASCADE)
     link_type = models.ForeignKey(ActivityLinkType, on_delete=models.CASCADE)
+    
+    def as_json(self):
+        
+        return "{\"id\":\""+str(self.id).encode('utf8')+"\","+\
+            "\"source\":\""+str(self.source.id).encode('utf8')+"\","+\
+            "\"target\":\""+str(self.target.id).encode('utf8')+"\","+\
+            "\"type\":\""+str(int(self.link_type.id)-1).encode('utf8')+"\"}"
