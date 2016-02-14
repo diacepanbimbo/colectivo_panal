@@ -36,13 +36,15 @@ def project(request):
 
 @csrf_exempt
 def modify_project(request):
+    print "------------------------------------------------>"
     query_dict = request.POST #json.dumps(urlparse.parse_qs(request.META['QUERY_STRING'])
     query_string_json = json.loads(json.dumps(urlparse.parse_qs(request.META['QUERY_STRING'])))
-    print query_string_json['gantt_mode']
+    print query_string_json['gantt_mode'][0].encode('utf8')
+    print "tasks".encode('utf8')
     if query_dict.__contains__('ids'):
         ids = query_dict.get("ids")
         for id in ids.split(","):
-            if query_string_json['gantt_mode'] == "tasks":
+            if query_string_json['gantt_mode'][0].encode('utf8') == "tasks":
                 print "------------------------------------------------>"
                 try:
                     activity = Activity.objects.get(id=id)
@@ -52,8 +54,9 @@ def modify_project(request):
                 for key, value in query_dict.iteritems():
                     if key.startswith(id):
                         d[key.replace(id+"_", "")] = value
-                        print d[key.replace(id+"_", "")] +"="+ str(value)
-
+                        print d[key.replace(id+"_", "")] +"=>"+ str(value)
+                
+                print "auxxxxxxxxxxxxxxxx"
                 d2=dict(
                     id = d['id'],
                     responsible_user = get_responsible_user_from_id(1),
@@ -62,7 +65,7 @@ def modify_project(request):
                     start_date = d['start_date'],
                     end_date = get_end_date_from_start_plus_duration(d['start_date'],d['duration']),
                     parent = get_parent_activity_from_id(d['parent']),
-                    activity_type = get_activity_type_from_id(3))
+                    activity_type = get_activity_type_from_id(1))
 
                 print d
                 if 'progress' in d:
@@ -80,7 +83,8 @@ def modify_project(request):
 
             #!nativeeditor_status
             returned_text="{\"data\":{\"type\":\"inserted\", \"sid\":\"" + str(id) + "\", \"tid\":\"" + str(id) + "\"}}"
-
+            print returned_text
+            
     #{"type":"updated", "sid":15, "tid":15} or {"action":"error", ...}
     return HttpResponse(returned_text)
 
