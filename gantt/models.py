@@ -83,3 +83,9 @@ class ActivityLink(models.Model):
             "\"source\":\""+str(self.source.id).encode('utf8')+"\","+\
             "\"target\":\""+str(self.target.id).encode('utf8')+"\","+\
             "\"type\":\""+str(int(self.link_type.id)-1).encode('utf8')+"\"}"
+
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+    responsible_user = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
+    
+    

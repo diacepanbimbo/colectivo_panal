@@ -53,6 +53,7 @@ def modify_project(request):
     if query_dict.__contains__('ids'):
         ids = query_dict.get("ids")
         for id in ids.split(","):
+            
             if query_string_json['gantt_mode'][0].encode('utf8') == "tasks":
                 try:
                     activity = Activity.objects.get(id=id)
@@ -62,27 +63,32 @@ def modify_project(request):
                 for key, value in query_dict.iteritems():
                     if key.startswith(id):
                         d[key.replace(id+"_", "")] = value
-                        
-                d2=dict(
-                    id = d['id'],
-                    responsible_user = get_responsible_user_from_id(1),
-                    short_description = d['text'],
-                    long_description = d['text'],
-                    start_date = d['start_date'],
-                    end_date = get_end_date_from_start_plus_duration(d['start_date'],d['duration']),
-                    parent = get_parent_activity_from_id(d['parent']),
-                    activity_type = get_activity_type_from_id(1))
-
-
-                if 'progress' in d:
-                    d2['progress'] = d['progress']
-                    print "progersssss inserted"
-                    
-                for key, value in d2.iteritems():
-                    setattr(activity, key, value)
-
-                saving = activity.save()
                 
+                print "-"+d['!nativeeditor_status']+"-"
+                if d['!nativeeditor_status'] == 'deleted':
+                    deleted_activity = activity.delete()
+                    print "deleted_activitydeleted_activitydeleted_activitydeleted_activity deleted_activity"
+                else:    
+                        
+                    d2=dict(
+                        id = d['id'],
+                        responsible_user = get_responsible_user_from_id(1),
+                        short_description = d['text'],
+                        long_description = d['text'],
+                        start_date = d['start_date'],
+                        end_date = get_end_date_from_start_plus_duration(d['start_date'],d['duration']),
+                        parent = get_parent_activity_from_id(d['parent']),
+                        activity_type = get_activity_type_from_id(1))
+    
+                    if 'progress' in d:
+                        d2['progress'] = d['progress']
+                        #print "progersssss inserted"
+                        
+                    for key, value in d2.iteritems():
+                        setattr(activity, key, value)
+    
+                    saving = activity.save()
+                    
                 returned_text="{\"data\":{\"type\":\""+d['!nativeeditor_status']+"\", \"sid\":\"" + str(id) + "\", \"tid\":\"" + str(id) + "\"}}"
 
             if query_string_json['gantt_mode'][0].encode('utf8') == "links":
@@ -95,18 +101,24 @@ def modify_project(request):
                 for key, value in query_dict.iteritems():
                     if key.startswith(id):
                         d[key.replace(id+"_", "")] = value
-                        
-                d2=dict(
-                    id = d['id'],
-                    source = Activity.objects.get(id=d['source']),
-                    target = Activity.objects.get(id=d['target']),
-                    link_type = get_activity_link_type_from_id(int(d['type'])+1)
-                    )
                 
-                for key, value in d2.iteritems():
-                    setattr(activity_link, key, value)
-
-                saving = activity_link.save()
+                print "-"+d['!nativeeditor_status']+"-"
+                if d['!nativeeditor_status'] == 'deleted':
+                    deleted_activity_link = activity_link.delete()
+                else:    
+                          
+                            
+                    d2=dict(
+                        id = d['id'],
+                        source = Activity.objects.get(id=d['source']),
+                        target = Activity.objects.get(id=d['target']),
+                        link_type = get_activity_link_type_from_id(int(d['type'])+1)
+                        )
+                    
+                    for key, value in d2.iteritems():
+                        setattr(activity_link, key, value)
+    
+                    saving = activity_link.save()
                 returned_text="{\"data\":{\"type\":\""+d['!nativeeditor_status']+"\", \"sid\":\"" + str(id) + "\", \"tid\":\"" + str(id) + "\"}}"
 
 
